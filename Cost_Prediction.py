@@ -238,11 +238,12 @@ def project():
 
     # Make a prediction when the user clicks the "Predict" button
     if st.button("Predict"):
-        prediction = predict(np.array([[
+        dmatrix = xgb.DMatrix(np.array([[
             kddati2, tkp, a, b, c, cb, d, gd, hd, i1, i2, i3, i4, kb, kc, kg, ki,
             kj, kk, kl, km, ko, kp, kt, ku, s, sa, sb, sc, sd
             ]]))
-
+        prediction = predict(dmatrix)
+        
         temp = prediction[0]
         # z = np.array(10**temp)
         currency = "Rp. {:,.2f}".format(temp)
