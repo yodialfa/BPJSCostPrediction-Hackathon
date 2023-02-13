@@ -6,6 +6,7 @@ import joblib
 # import math
 # from predict_cost import predict
 from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
 from streamlit_option_menu import option_menu
 import base64
 from PIL import Image
@@ -238,12 +239,14 @@ def project():
             kj, kk, kl, km, ko, kp, kt, ku, s, sa, sb, sc, sd
             ]]))
 
-        # temp = prediction[0] ** 10 ##inverse to normal
-        # currency = "Rp. {:,.2f}".format(temp)
-        # # main_currency, fractional_currency = currency.split('.')
-        # new_main_currency = currency.replace(',', '.')
-        # currency = new_main_currency
-        st.write("Cost Prediction     :  ",10 ** prediction[0])
+        temp = prediction[0]
+        # z = np.array(10**temp)
+        currency = "Rp. {:,.2f}".format(temp)
+        # main_currency, fractional_currency = currency.split('.')
+        new_main_currency = currency.replace(',', '.')
+        currency = new_main_currency
+        st.write("Cost Prediction     :  ",currency)
+  
         
 def contact():
     # --- GENERAL SETTINGS ---
