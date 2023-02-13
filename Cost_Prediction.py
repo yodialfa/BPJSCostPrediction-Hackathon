@@ -5,7 +5,7 @@ import numpy as np
 import joblib
 # import math
 # from predict_cost import predict
-from xgboost import XGBRegressor
+from xgboost import XGBRegressor as xgb_best
 from streamlit_option_menu import option_menu
 import base64
 from PIL import Image
