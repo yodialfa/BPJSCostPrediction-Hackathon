@@ -63,6 +63,8 @@ set_bg_hack_url()
 #     model = pickle.load(f)
 model = joblib.load("BPJS_CostPrediction_xgb.pkl")
 
+
+
 # Create a function to make predictions with the model
 def predict(data):
     # inputs = data
