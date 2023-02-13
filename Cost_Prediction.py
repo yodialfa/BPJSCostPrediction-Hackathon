@@ -5,7 +5,8 @@ import numpy as np
 import joblib
 # import math
 # from predict_cost import predict
-from xgboost import XGBRegressor
+# from xgboost import XGBRegressor
+import xgboost as xgb
 from lightgbm import LGBMRegressor
 from streamlit_option_menu import option_menu
 import base64
@@ -61,9 +62,10 @@ set_bg_hack_url()
 # Load the pre-trained model from the .pkl file
 # with open("BPJS_CostPrediction.pkl", "rb") as f:
 #     model = pickle.load(f)
-model = joblib.load("BPJS_CostPrediction_xgb.pkl")
+# model = joblib.load("BPJS_CostPrediction_xgb.pkl")
 
-
+model = xgb.XGBRegressor()
+model.load_model("BPJS_CostPrediction_xgb.txt")
 
 # Create a function to make predictions with the model
 def predict(data):
