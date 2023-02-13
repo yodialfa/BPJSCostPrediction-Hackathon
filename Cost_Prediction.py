@@ -15,11 +15,19 @@ lr = Image.open('img/mulienarregbefore.png')
 ridge   = Image.open('img/ridgebefore.png')
 lasso   = Image.open('img/lassobefore.png')
 dt_before  = Image.open('img/dtbefore.png')
-dt_after   = Image.open('img/dtafter.png')
 rf_before = Image.open('img/rfbefore.png')
-rf_after = Image.open('img/rfafter.png')
 lgbm_before = Image.open('img/lgbmbefore.png')
-lgbm_after = Image.open('img/lgbmafter.png')
+dt1 = Image.open('img/dt1.png')
+dt2 = Image.open('img/dt2.png')
+rf1 = Image.open('img/rf1.png')
+rf2 = Image.open('img/rf2.png')
+ransac1 = Image.open('img/ransac1.png')
+ransac2 = Image.open('img/ransac2.png')
+lgbm1 = Image.open('img/lgbm1.png')
+lgbm2 = Image.open('img/lgbm2.png')
+xgb1 = Image.open('img/xgb1.png')
+xgb2 = Image.open('img/xgb2.png')
+
 yodi = Image.open('img/Yodi.jpg')
  
 
@@ -52,7 +60,7 @@ set_bg_hack_url()
 # Load the pre-trained model from the .pkl file
 # with open("BPJS_CostPrediction.pkl", "rb") as f:
 #     model = pickle.load(f)
-model = joblib.load("BPJS_CostPrediction.pkl")
+model = joblib.load("BPJS_CostPrediction_xgb.pkl")
 
 # Create a function to make predictions with the model
 def predict(data):
@@ -68,7 +76,7 @@ def home():
     st.write("So, first of all we will Explore the data to find outlier or missing value. The dataset has 36 columns and more 50k rows.")
     st.write("Before we going through, we will try with baseline model to know how much performance that we got, and then we will deep dive with Cleansing and Tunning Hyperparameter")
     st.write("The following dataset can be accessed [here](https://www.kaggle.com/datasets/bagusbpg/bpjs-kesehatan-hackathon-2021-cost-prediction)")
-    st.write("Full code can be accessed here :sunglasses:  [source](https://www.github.com/yodialfa)")
+    st.write("Full code can be accessed here :sunglasses:  [source](https://github.com/yodialfa/BPJSCostPrediction-Hackathon)")
     
 
     col1, col2, col3 = st.columns(3)
@@ -88,23 +96,16 @@ def home():
                 "tglpelayanan is date of serve, peserta is encoded of member, case total case of serve, unit cost is the target"
             )
     st.header("Data Cleansing")
-    st.write("In this section I drop some features like rowid which number of row, tglpelayanan, peserta and case. And i drop 'ds' feature cause has 1 value there."
+    st.write("In this section I drop some features like rowid which number of row, tglpelayanan, peserta and case."
              "and when I check missing value I didn't found missing value."
             )
-    st.header("Modelling")
+    st.header("Baseline Modelling")
     st.write("I split the data to train and test with ratio 80/20, then modelling with baseline model (Linear Regression, Ridge and Lasso."
              "And I have r2 score is 0.89 and rmse is 607.313 (Multiple Linear Regression), with Ridge is 0.89 and rmse is 607.355 (Ridge)."
-             "And with Lasso r2 score is 0.89 too, and RMSE is 607.315")
+             "And with Lasso r2 score is 0.89 too, and RMSE is 607.315.")
     st.write("I try Decission Tree, Random Forest and LightGBM without hyper parameter tunning, And I got R2 Score and RMSE (0.97 , 272.031 (DT))"
-             "R2 Score 0.98 RMSE = 229.257 (Random Forest), R2 Score = 0.976 Rmse = 283.011 (Light GBM)" 
-
-            )         
-    st.write("And I try to improve with Decission Tree and Random Forest and LGBM with Hyperparameter Tunning. I got r2 score is 0.98 rmse 285.197 (DT)"
-             "with Random forest r2 score is 0.985 and rmse is 253.282, and with LGBM R2 Score = 0.98 RMSE = 256.777")
-    st.write("We have some result from the model, before hyperparameter tunning DT and RF we got slowest rmse, but after tunning the rmse is high"
-             "so we can assumed that the model is overfitting. In LGBM the rmse isn't slowest than other, but after tunning hyperparameter has increasment"
-             "And I'll choose LGBM for the model because the model show me for improvements."
-            )
+             "R2 Score 0.98 RMSE = 229.257 (Random Forest), R2 Score = 0.976 Rmse = 283.011 (Light GBM). It's good than Linear Regression, Ridge and Lasso" 
+            ) 
     st.subheader("Multiple Linear Regression Before Deep Cleansing And Tunning Hyperparmeter")
     st.image(lr, caption='Multiple Linear Regression')
     st.subheader("Ridge Regression Before Deep Cleansing And Tunning Hyperparmeter")
@@ -117,12 +118,67 @@ def home():
     st.image(rf_before, caption='Random Forest Regression')
     st.subheader("LGBM Regression Before Deep Cleansing And Tunning Hyperparmeter")
     st.image(lgbm_before, caption='LGBM Regression')
-    st.subheader("DT With Deep Cleansing And Tunning Hyperparmeter")
-    st.image(dt_after, caption='DT Regression')
-    st.subheader("RF Regression With Deep Cleansing And Tunning Hyperparmeter")
-    st.image(rf_after, caption='RF Regression')
-    st.subheader("LGBM Regression With Deep Cleansing And Tunning Hyperparmeter")
-    st.image(lgbm_after, caption='LGBM Regression')
+    st.header("Deep Cleansing")       
+    st.write("After using baseline for our data. I try to cleaning the data again. First of all I drop 'ds' because has 1 value, and I drop 'peserta too'"
+             "Because member id isn't using for modelling." 
+            ) 
+    st.write("And I see on target (unit_cost) didn't normal. So I try to doing remove outlier for the next step."
+             "But after we doing removing outlier, the target still didn't normal. So I doing Feature Engineering using Log Transformation. And After that the data" 
+             "is normal, but bimodal(two peak). So I try to going the next step because some ML has immune that bimodal data"
+            ) 
+    st.header("Modelling and Development")
+    st.write("After deep cleansing, I try to fit using some model and without tunning hyperparameter. And I got value like this :")
+
+    st.subheader("Decission Tree Regressor")
+    st.write("Decission Tree : R2 Score = 0.99 RMSE = 0.057609")
+    st.image(dt1, caption='Decission Tree Regressor Before Tunning')
+
+    st.subheader("Random Forest Regressor")
+    st.write("Random Forest : R2 Score = 0.99 RMSE = 0.057409")
+    st.image(rf1, caption='Random Forest Regressor Before Tunning')
+
+    st.subheader("RANSAC Regressor")
+    st.write("Ransac Regressor : R2 Score = 0.976 RMSE = 0.0912")
+    st.image(ransac1, caption='RANSAC Regressor Before Tunning')
+
+    st.subheader("Light GBM")
+    st.write("Light GBM : R2 Score =0.986 RMSE = 0.068224")
+    st.image(lgbm1, caption='LGBM Before Tunning')
+
+    st.subheader("XGB Regressor")
+    st.write("XGB Regressor : R2 Score = 0.989 RMSE 0.06007")
+    st.image(xgb1, caption='XGB Regressor Before Tunning')
+    
+    st.subheader("Improvements")
+    st.write("And I try to improve that model with Hyperparameter Tunning. So I have score like this")
+
+    st.subheader("Decission Tree Regressor After Tunning Hyperparameter")
+    st.write("Decission Tree : R2 Score = 0.973 RMSE = 0.0966")
+    st.image(dt2, caption='Decission Tree Regressor After Tunning')
+
+    st.subheader("Random Forest Regressor After Tunning Hyperparameter")
+    st.write("Random Forest : R2 Score = 0.988 RMSE = 0.06575")
+    st.image(rf2, caption='Random Forest Regressor After Tunning')
+
+    st.subheader("RANSAC Regressor After Tunning Hyperparameter")
+    st.write("Ransac Regressor : R2 Score = 0.976 RMSE = 0.09106")
+    st.image(ransac2, caption='RANSAC Regressor After Tunning')
+
+    st.subheader("Light GBM After Tunning Hyperparameter")
+    st.write("Light GBM : R2 Score =0.989 RMSE = 0.06044")
+    st.image(lgbm2, caption='LGBM After Tunning')
+
+    st.subheader("XGB Regressor After Tunning Hyperparameter")
+    st.write("XGB Regressor : R2 Score = 0.99 RMSE 0.05686")
+    st.image(xgb2, caption='XGB Regressor After Tunning')
+
+    st.write("We have some result from the model, before hyperparameter tunning DT and RF we got slowest rmse, but after tunning the rmse is high.so we can assumed that the model is overfitting.  Ransac Regressor after tunning hyperparameter"
+             "show improvements, but the RMSE still high. ")
+    st.write("LGBM and XGB Regressor seem has improvement after Tunning Hyperparmeter. But between that model, XGB is the slowest RMSE than LGBM"
+             "And I'll choose XGB for the model because the model is the best than other."
+            )
+
+
 #page for project
 def project():
     # Create a Streamlit app
@@ -181,11 +237,13 @@ def project():
             kddati2, tkp, a, b, c, cb, d, gd, hd, i1, i2, i3, i4, kb, kc, kg, ki,
             kj, kk, kl, km, ko, kp, kt, ku, s, sa, sb, sc, sd
             ]]))
-        currency = "Rp. {:,.2f}".format(prediction[0])
-        # main_currency, fractional_currency = currency.split('.')
-        new_main_currency = currency.replace(',', '.')
-        currency = new_main_currency
-        st.write("Cost Prediction     :  ",currency)
+
+        # temp = prediction[0] ** 10 ##inverse to normal
+        # currency = "Rp. {:,.2f}".format(temp)
+        # # main_currency, fractional_currency = currency.split('.')
+        # new_main_currency = currency.replace(',', '.')
+        # currency = new_main_currency
+        st.write("Cost Prediction     :  ",10 ** prediction[0])
         
 def contact():
     # --- GENERAL SETTINGS ---
